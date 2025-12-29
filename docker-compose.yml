@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: i2poc_mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: i2poc
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - i2poc_network
+
+  streamlit_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: i2poc_streamlit
+    ports:
+      - "8501:8501"
+    environment:
+      MONGODB_URL: mongodb://admin:password@mongodb:27017/i2poc
+      MONGODB_DATABASE: i2poc
+      MONGODB_COLLECTION: ideas
+    depends_on:
+      - mongodb
+    networks:
+      - i2poc_network
+    volumes:
+      - .:/app
+
+volumes:
+  mongodb_data:
+
+networks:
+  i2poc_network:
+    driver: bridge

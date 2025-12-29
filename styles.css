@@ -1,0 +1,143 @@
+
+    @import url('https://fonts.googleapis.com/css2?family=General+Sans:wght@300;400;500;600;700&display=swap');
+    
+    * {
+        font-family: 'General Sans', sans-serif !important;
+    }
+    
+    /* Hide sidebar completely */
+    section[data-testid="stSidebar"] {
+        display: none !important;
+    }
+    
+    /* Hide sidebar toggle button */
+    .st-emotion-cache-1v0mbdj {
+        display: none !important;
+    }
+    
+    /* Ensure main content takes full width */
+    .main .block-container {
+        max-width: 100% !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+    
+    .main-header {
+        font-size: 2.5rem;
+        color: #792a85;
+        text-align: center;
+        margin-bottom: 2rem;
+        font-weight: 600;
+    }
+    
+    .idea-card {
+        border: 1px solid #e6d6ea;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        background-color: #f9f5fa;
+        box-shadow: 0 2px 8px rgba(121, 42, 133, 0.1);
+    }
+    
+    .score-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: bold;
+        margin-right: 0.5rem;
+        background-color: #792a85;
+        color: white;
+    }
+    
+    .stButton button {
+        background-color: #792a85;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+    }
+    
+    .stButton button:hover {
+        background-color: #5a1f63;
+        color: white;
+    }
+    
+    .stTextInput input, .stTextArea textarea {
+        border: 1px solid #e6d6ea;
+        border-radius: 8px;
+        background-color: #fcfafd;
+    }
+    
+    .stSelectbox div[data-baseweb="select"] {
+        border: 1px solid #e6d6ea;
+        border-radius: 8px;
+        background-color: #fcfafd;
+    }
+    
+    .stProgress > div > div > div {
+        background-color: #792a85;
+    }
+    
+    .stMetric {
+        background-color: #f9f5fa;
+        padding: 1rem;
+        border-radius: 8px;
+        border: 1px solid #e6d6ea;
+    }
+
+/* Fix dropdown z-index issues */
+.stSelectbox > div > div {
+    z-index: 9999 !important;
+}
+.stSelectbox > div > div > div {
+    z-index: 9999 !important;
+}
+/* Ensure dropdowns appear above other elements */
+div[data-baseweb="select"] {
+    z-index: 9999 !important;
+}
+div[data-baseweb="popover"] {
+    z-index: 10000 !important;
+}
+
+/* HIDE ANNOYING DROPDOWN SUGGESTIONS/TOOLTIPS */
+/* Hide the keyboard hint tooltips that appear on dropdowns */
+div[data-baseweb="tooltip"] {
+    display: none !important;
+}
+
+/* Hide any popover hints/suggestions */
+div[role="tooltip"] {
+    display: none !important;
+}
+
+/* Hide keyboard navigation hints */
+.st-emotion-cache-16idsys {
+    display: none !important;
+}
+
+/* Hide any aria-describedby tooltips */
+[aria-describedby] + div[role="tooltip"] {
+    display: none !important;
+}
+
+/* Additional tooltip hiding */
+.stTooltipIcon {
+    display: none !important;
+}
+
+/* Hide help text tooltips */
+.st-emotion-cache-1kyxreq {
+    display: none !important;
+}
+
+/* Prevent Chrome autofill yellow background */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px white inset !important;
+    -webkit-text-fill-color: inherit !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
