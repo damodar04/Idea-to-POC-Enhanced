@@ -18,6 +18,13 @@ class Database:
     @classmethod
     def connect_db(cls, retry=True):
         """Establish connection to MongoDB with retry logic"""
+        # Check if MONGODB_URL is configured
+        if not MONGODB_URL:
+            logger.error("MONGODB_URL is not set. Cannot connect to MongoDB.")
+            logger.error("Please set MONGODB_URL in your environment variables (Render Dashboard → Environment)")
+            cls._reset_connection()
+            return False
+            
         try:
             if cls._client is None:
                 # Enhanced connection settings for cloud deployment
@@ -33,7 +40,9 @@ class Database:
                 }
                 
                 logger.info(f"Attempting to connect to MongoDB... (Attempt {cls._connection_attempts + 1}/{cls._max_retries})")
-                logger.info(f"MongoDB URL: {MONGODB_URL[:50]}...")  # Log partial URL for debugging
+                # Log partial URL for debugging (first 50 chars)
+                url_preview = MONGODB_URL[:50] + "..." if len(MONGODB_URL) > 50 else MONGODB_URL
+                logger.info(f"MongoDB URL: {url_preview}")
                 logger.info(f"Database: {MONGODB_DATABASE}, Collection: {MONGODB_COLLECTION}")
                 
                 cls._client = pymongo.MongoClient(MONGODB_URL, **connection_options)

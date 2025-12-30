@@ -38,6 +38,14 @@ initialize_session()
 @st.cache_resource
 def init_database():
     """Initialize and verify MongoDB connection at startup"""
+    from config import MONGODB_URL
+    
+    # Check if MONGODB_URL is configured
+    if not MONGODB_URL:
+        logger.error("❌ MONGODB_URL environment variable is not set!")
+        logger.error("Please configure MONGODB_URL in your environment variables.")
+        return False
+    
     try:
         logger.info("Initializing MongoDB connection...")
         if Database.connect_db():
@@ -52,10 +60,14 @@ def init_database():
 
 # Initialize database connection
 if 'db_initialized' not in st.session_state:
+    from config import MONGODB_URL
     db_status = init_database()
     st.session_state.db_initialized = db_status
     if not db_status:
-        logger.warning("Database connection failed at startup. Will retry on first use.")
+        if not MONGODB_URL:
+            logger.warning("⚠️ MONGODB_URL not configured. Please set it in environment variables.")
+        else:
+            logger.warning("Database connection failed at startup. Will retry on first use.")
 
 def load_css(file_name):
     try:
@@ -126,12 +138,28 @@ def main():
         return
     
     # Check database connection status
+    from config import MONGODB_URL
+    if not MONGODB_URL:
+        st.error("⚠️ **MongoDB Not Configured**: MONGODB_URL environment variable is not set.")
+        st.info("""
+        **For Render Deployment:**
+        1. Go to your Render Dashboard
+        2. Select your service → Environment tab
+        3. Add environment variable: `MONGODB_URL` with your MongoDB Atlas connection string
+        4. Also add: `MONGODB_DATABASE=i2poc` and `MONGODB_COLLECTION=ideas`
+        5. Save and redeploy
+        
+        **For Local Development:**
+        Create a `.env` file with: `MONGODB_URL=your_connection_string`
+        """)
+        return
+    
     if not st.session_state.get('db_initialized', False):
         # Try to reconnect
         if not Database.verify_connection():
             if not Database.connect_db():
-                st.error("⚠️ **Database Connection Issue**: Unable to connect to MongoDB. Please check your connection settings and ensure MongoDB Atlas allows connections from this server.")
-                st.info("**Troubleshooting**: Check Render logs for detailed error messages. Verify MongoDB Atlas Network Access settings.")
+                st.error("⚠️ **Database Connection Issue**: Unable to connect to MongoDB.")
+                st.info("**Troubleshooting**: Check Render logs for detailed error messages. Verify MongoDB Atlas Network Access settings allow connections from Render's IP addresses.")
                 return
     
     # Show top navigation with logo

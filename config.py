@@ -1,7 +1,11 @@
 import os
+import logging
 from dotenv import load_dotenv
 
-# Load variables from .env file into os.environ
+logger = logging.getLogger(__name__)
+
+# Load variables from .env file into os.environ (only for local development)
+# On Render, environment variables are set directly, so this won't override them
 load_dotenv()
 
 # Set LANGCHAIN environment variables (optional - only if API key is available)
@@ -21,10 +25,27 @@ if groq_api_key:
 gpt_4o_api_key = os.getenv("GPT_4O_API_KEY")
 azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
 
-# Database configuration
-MONGODB_URL = os.getenv("MONGODB_URL", "mongodb://localhost:27017")
+# Database configuration - REQUIRED for production
+MONGODB_URL = os.getenv("MONGODB_URL")
 MONGODB_DATABASE = os.getenv("MONGODB_DATABASE", "i2poc")
 MONGODB_COLLECTION = os.getenv("MONGODB_COLLECTION", "ideas")
+
+# Validate required environment variables
+if not MONGODB_URL:
+    error_msg = (
+        "MONGODB_URL environment variable is not set!\n"
+        "Please set MONGODB_URL in your environment variables.\n"
+        "For Render: Go to Dashboard → Your Service → Environment → Add MONGODB_URL\n"
+        "For local: Create a .env file with MONGODB_URL=your_connection_string"
+    )
+    logger.error(error_msg)
+    # Don't raise exception here - let the app start and show error in UI
+    # This allows the app to start even if MongoDB isn't configured yet
+else:
+    # Log that MongoDB URL is configured (but don't log the full URL for security)
+    url_preview = MONGODB_URL[:30] + "..." if len(MONGODB_URL) > 30 else MONGODB_URL
+    logger.info(f"MongoDB URL configured: {url_preview}")
+    logger.info(f"MongoDB Database: {MONGODB_DATABASE}, Collection: {MONGODB_COLLECTION}")
 
 # App configuration
 APP_TITLE = "AI Idea to Reality POC"

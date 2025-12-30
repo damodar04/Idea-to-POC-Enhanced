@@ -16,8 +16,25 @@ class IdeaService:
 
     def connect(self):
         """Establish connection to MongoDB"""
+        if not MONGODB_URL:
+            logger.error("MONGODB_URL is not set. Cannot connect to MongoDB.")
+            self.collection = None
+            return False
+            
         try:
-            self.client = pymongo.MongoClient(MONGODB_URL, serverSelectionTimeoutMS=5000)
+            # Use enhanced connection settings for cloud deployment (same as Database class)
+            connection_options = {
+                'serverSelectionTimeoutMS': 30000,  # 30 seconds for cloud
+                'connectTimeoutMS': 30000,
+                'socketTimeoutMS': 30000,
+                'maxPoolSize': 50,  # Connection pooling
+                'minPoolSize': 5,
+                'retryWrites': True,
+                'retryReads': True,
+                'w': 'majority',  # Write concern
+            }
+            
+            self.client = pymongo.MongoClient(MONGODB_URL, **connection_options)
             # Verify connection
             self.client.server_info()
             
