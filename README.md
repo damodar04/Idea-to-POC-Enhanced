@@ -16,21 +16,56 @@ A Python-based Streamlit application for submitting, evaluating, and managing in
 ## Project Structure
 
 ```
-I2POC_Streamlit/
+Idea-to-POC-Enhanced/
 ├── app.py                      # Main Streamlit application
+├── app_enhanced.py            # Enhanced version with additional features
 ├── models.py                   # Data models and schemas
 ├── config.py                   # Configuration settings
+├── constants.py               # Application constants
 ├── requirements.txt            # Python dependencies
+├── styles.css                  # Custom CSS styles
 ├── README.md                   # This file
-├── .streamlit/
-│   └── config.toml            # Streamlit configuration
-├── services/
+├── ARCHITECTURE_OVERVIEW.md    # Architecture documentation
+├── NEW_FEATURES.md             # New features documentation
+├── RENDER_DEPLOYMENT.md        # Render deployment guide
+├── MONGODB_CONNECTION_GUIDE.md # MongoDB connection guide
+├── render.yaml                 # Render deployment configuration
+├── Dockerfile                  # Docker configuration
+├── docker-compose.yml          # Docker Compose configuration
+├── test_mongodb_connection.py  # MongoDB connection test script
+├── assets/                     # Static assets (logos, images)
+│   ├── *.svg
+├── pages/                      # Streamlit page modules
+│   ├── idea_submission.py
+│   ├── idea_catalog.py
+│   ├── enhanced_idea_catalog.py
+│   ├── idea_development.py
+│   ├── reviewer_dashboard.py
+│   └── portfolio_dashboard.py
+├── services/                   # Business logic services
 │   ├── database.py            # MongoDB connection and operations
-│   ├── idea_service.py        # Idea CRUD operations
-│   └── ai_score_service.py    # AI scoring and evaluation
-└── utils/
-    ├── auth.py                # Authentication and session management
-    └── helpers.py             # Utility functions
+│   ├── idea_service.py         # Idea CRUD operations
+│   ├── ai_score_service.py    # AI scoring and evaluation
+│   ├── enhanced_ai_score_service.py
+│   ├── research_agent.py
+│   ├── idea_research_agent.py
+│   ├── company_research_agent.py
+│   ├── resource_estimation_agent.py
+│   ├── workflow_orchestrator.py
+│   ├── portfolio_analytics_service.py
+│   ├── research_document_generator.py
+│   ├── question_generator.py
+│   └── text_cleaner.py
+└── utils/                      # Utility functions
+    ├── auth.py                 # Authentication and session management
+    ├── helpers.py              # Helper functions
+    ├── ai_questions.py
+    ├── api_optimizer.py
+    ├── cache_manager.py
+    ├── enhanced_idea_display.py
+    ├── error_handler.py
+    ├── json_parser.py
+    └── score_explanation_ui.py
 ```
 
 ## Setup Instructions
@@ -40,10 +75,11 @@ I2POC_Streamlit/
 - MongoDB 4.0 or higher
 - pip package manager
 
-### 1. Clone/Download the Project
+### 1. Clone the Project
 
 ```bash
-cd I2POC_Streamlit
+git clone https://github.com/damodar04/Idea-to-POC-Enhanced.git
+cd Idea-to-POC-Enhanced
 ```
 
 ### 2. Create Virtual Environment
@@ -105,7 +141,21 @@ mongod
 - Get your connection string
 - Update `MONGODB_URL` in `.env`
 
-### 6. Run the Application
+### 6. Test MongoDB Connection (Optional but Recommended)
+
+Before running the app, test your MongoDB connection:
+
+```bash
+python test_mongodb_connection.py
+```
+
+This will verify:
+- Environment variables are set correctly
+- MongoDB connection string is valid
+- Network access is configured properly
+- Database and collection are accessible
+
+### 7. Run the Application
 
 ```bash
 streamlit run app.py
@@ -185,9 +235,20 @@ MONGODB_DATABASE = "i2poc"
 ```
 Error: Failed to connect to MongoDB
 ```
+
+**For Local Development:**
 - Ensure MongoDB is running: `mongod`
 - Check `MONGODB_URL` in `.env` is correct
 - Verify MongoDB is accessible on the configured port
+
+**For Cloud Deployment (Render/MongoDB Atlas):**
+- **CRITICAL**: MongoDB Atlas Network Access must allow connections from Render
+  - Go to MongoDB Atlas → Network Access → Add IP Address
+  - Add `0.0.0.0/0` (allow all) or Render's specific IPs
+- Verify connection string format includes `retryWrites=true&w=majority`
+- Check username/password are correct and URL-encoded if needed
+- Run `python test_mongodb_connection.py` to diagnose issues
+- Check Render logs for detailed connection error messages
 
 ### Missing Dependencies
 ```
@@ -251,12 +312,24 @@ logger.error("Error message")
 
 ## Production Deployment
 
-### Option 1: Streamlit Cloud
+### Option 1: Render (Recommended)
+See [RENDER_DEPLOYMENT.md](RENDER_DEPLOYMENT.md) for detailed instructions.
+
+Quick steps:
+1. Push code to GitHub
+2. Create a new Web Service on Render
+3. Connect your GitHub repository
+4. Set environment variables (MongoDB URL, API keys)
+5. Deploy!
+
+The `render.yaml` file is included for easy configuration.
+
+### Option 2: Streamlit Cloud
 1. Push code to GitHub
 2. Connect to Streamlit Cloud
 3. Deploy directly from main branch
 
-### Option 2: Docker Deployment
+### Option 3: Docker Deployment
 ```dockerfile
 FROM python:3.9-slim
 WORKDIR /app
@@ -266,7 +339,7 @@ COPY . .
 CMD ["streamlit", "run", "app.py"]
 ```
 
-### Option 3: Self-hosted (Linux)
+### Option 4: Self-hosted (Linux)
 ```bash
 # Install Python and dependencies
 sudo apt-get install python3 python3-pip

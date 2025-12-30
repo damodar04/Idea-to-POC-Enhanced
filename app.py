@@ -21,6 +21,7 @@ from utils.auth import (
 from pages.idea_submission import show as show_submit_idea
 from pages.idea_catalog import show_idea_catalog
 from pages.reviewer_dashboard import show_reviewer_dashboard
+from services.database import Database
 
 # Page config
 st.set_page_config(
@@ -32,6 +33,29 @@ st.set_page_config(
 
 # Initialize session state
 initialize_session()
+
+# Initialize MongoDB connection at startup
+@st.cache_resource
+def init_database():
+    """Initialize and verify MongoDB connection at startup"""
+    try:
+        logger.info("Initializing MongoDB connection...")
+        if Database.connect_db():
+            logger.info("✅ MongoDB connection initialized successfully")
+            return True
+        else:
+            logger.error("❌ Failed to initialize MongoDB connection")
+            return False
+    except Exception as e:
+        logger.error(f"❌ Error initializing MongoDB: {e}")
+        return False
+
+# Initialize database connection
+if 'db_initialized' not in st.session_state:
+    db_status = init_database()
+    st.session_state.db_initialized = db_status
+    if not db_status:
+        logger.warning("Database connection failed at startup. Will retry on first use.")
 
 def load_css(file_name):
     try:
@@ -100,6 +124,15 @@ def main():
     if not is_authenticated():
         show_login_page()
         return
+    
+    # Check database connection status
+    if not st.session_state.get('db_initialized', False):
+        # Try to reconnect
+        if not Database.verify_connection():
+            if not Database.connect_db():
+                st.error("⚠️ **Database Connection Issue**: Unable to connect to MongoDB. Please check your connection settings and ensure MongoDB Atlas allows connections from this server.")
+                st.info("**Troubleshooting**: Check Render logs for detailed error messages. Verify MongoDB Atlas Network Access settings.")
+                return
     
     # Show top navigation with logo
     show_top_nav()
