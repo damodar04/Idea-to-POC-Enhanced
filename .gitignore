@@ -159,6 +159,9 @@ cache/
 # Logs
 logs/
 *.log
+*_log.txt
+db_log.txt
+pip_log.txt
 
 # Temporary files
 *.tmp
@@ -167,3 +170,22 @@ logs/
 # Database files
 *.db
 *.sqlite
+
+# Extracted content files
+pdf_content*.txt
+
+# Test/debug scripts (keep test_mongodb_connection.py as it's useful)
+check_*.py
+test_*.py
+!test_mongodb_connection.py
+
+# Utility scripts
+delete_*.py
+read_*.py
+
+# PDF files (unless in docs/)
+*.pdf
+!docs/*.pdf
+
+# Setup scripts with credentials
+setup_env.sh

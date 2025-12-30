@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: idea-to-poc-enhanced
+    env: python
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: streamlit run app.py --server.port=$PORT --server.address=0.0.0.0
+    envVars:
+      - key: MONGODB_URL
+        sync: false
+      - key: MONGODB_DATABASE
+        sync: false
+      - key: MONGODB_COLLECTION
+        sync: false
+      - key: DEEPSEEK_API_KEY
+        sync: false
+      - key: LANGSMITH_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GPT_4O_API_KEY
+        sync: false
+      - key: AZURE_OPENAI_ENDPOINT
+        sync: false
+      - key: TAVILY_API_KEY
+        sync: false
+      - key: PORT
+        value: 8501
+
