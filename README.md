@@ -312,9 +312,7 @@ To contribute improvements:
 3. Test thoroughly
 4. Submit pull request with description
 
-## License
 
-This project is confidential and owned by DexKo Group.
 
 ## Support
 
