@@ -42,10 +42,22 @@ if not MONGODB_URL:
     # Don't raise exception here - let the app start and show error in UI
     # This allows the app to start even if MongoDB isn't configured yet
 else:
-    # Log that MongoDB URL is configured (but don't log the full URL for security)
-    url_preview = MONGODB_URL[:30] + "..." if len(MONGODB_URL) > 30 else MONGODB_URL
-    logger.info(f"MongoDB URL configured: {url_preview}")
-    logger.info(f"MongoDB Database: {MONGODB_DATABASE}, Collection: {MONGODB_COLLECTION}")
+    # Safety check: Reject localhost URLs (not allowed in production/cloud)
+    if "localhost" in MONGODB_URL.lower() or "127.0.0.1" in MONGODB_URL:
+        error_msg = (
+            f"ERROR: MONGODB_URL contains localhost/127.0.0.1 which is not allowed!\n"
+            f"Current URL: {MONGODB_URL[:50]}...\n"
+            f"For Render/Cloud deployment, you MUST use MongoDB Atlas connection string.\n"
+            f"Format: mongodb+srv://username:password@cluster.mongodb.net/..."
+        )
+        logger.error(error_msg)
+        # Set to None to prevent connection attempts
+        MONGODB_URL = None
+    else:
+        # Log that MongoDB URL is configured (but don't log the full URL for security)
+        url_preview = MONGODB_URL[:30] + "..." if len(MONGODB_URL) > 30 else MONGODB_URL
+        logger.info(f"MongoDB URL configured: {url_preview}")
+        logger.info(f"MongoDB Database: {MONGODB_DATABASE}, Collection: {MONGODB_COLLECTION}")
 
 # App configuration
 APP_TITLE = "AI Idea to Reality POC"
